@@ -4,12 +4,11 @@ const userInput = document.querySelector('#user-input');
 const calculator = document.querySelector('.calculator');
 const displayResult = document.querySelector('#result');
 let isEqualsPressed = false;
-let equation = 0; //separate variable to calculate equation in backend
-let checkForDecimal = ''; //to store each number and check if decimal is pressed
-
+let equation = 0; 
+let checkForDecimal = ''; 
 calcKeys.addEventListener('click', (event) => {
 
-	//Check if click is on the button and not on the container
+	
 	if(!event.target.closest('button')) return;
 
 	const key = event.target;
@@ -18,27 +17,21 @@ calcKeys.addEventListener('click', (event) => {
 	const { type } = key.dataset;
 	const { previousKeyType } = calculator.dataset;
 		
-	//If any number button is pressed
+	
 	if(type === 'number' && !isEqualsPressed) {
-		/*
-			1. Inital screen display is 0
-			2. replace initial display with user input if number is pressed
-			3. else concat with operator
-			4. if screen display is anything other than number concat the display
-		*/
+		
 		if (inputDisplay === '0') {
 			userInput.textContent = (previousKeyType === 'operator') ? inputDisplay + keyValue : keyValue;
 			equation = (previousKeyType === 'operator') ? equation + key.value : key.value;
 			checkForDecimal = checkForDecimal + keyValue;
 		}else {
-			//Check length so that number stays within display box
-			//else replace it with exponential
+			
 			if (checkForDecimal.length >= 19) {
 				var replaceNumber = checkForDecimal;
 				checkForDecimal = Number(checkForDecimal).toExponential(2);
 				userInput.textContent = inputDisplay.replace(replaceNumber, checkForDecimal);
 			}else {
-				//Check for Infinity OR NaN in Display
+				
 				userInput.textContent = userInput.textContent.includes('N') ? 'NaN' : 
 										userInput.textContent.includes('I') ? 'Infinity' : inputDisplay + keyValue;
 				equation = equation + key.value;
@@ -47,27 +40,18 @@ calcKeys.addEventListener('click', (event) => {
 		}
 	}
 
-	/*
-		1. Check if operator is pressed AND Equals To (=) is not yet pressed
-		2. AND Display dose not include Infinity
-		3. Replace checkForDecimal with blank to store next number
-	*/
+
 	if (type === 'operator' && previousKeyType !== 'operator'
 		&& !isEqualsPressed && !inputDisplay.includes('Infinity')) {
-		//calculator.dataset.firstNumber = checkForDecimal;
-		// calculator.dataset.operator = key.id;
+	
 		checkForDecimal = '';
 		userInput.textContent = inputDisplay + ' ' + keyValue + ' ';
 		equation = equation + ' ' + key.value + ' ';
 
 	}
 
-	/*
-		1. Check if Decimal button is pressed AND Equals To (=) is not yet pressed
-		2. AND was a previously pressed button a number or was display a 0
-		3. #2 required so that if user presses decimal after operator, it is not displayed
-		4. check if the number already contains a decimal
-	*/
+	
+
 	if (type === 'decimal' && (previousKeyType === 'number' || inputDisplay === '0')
 		&& !isEqualsPressed && !inputDisplay.includes('Infinity')) {
 		if (!checkForDecimal.includes('.')) {
@@ -93,9 +77,9 @@ calcKeys.addEventListener('click', (event) => {
 
 	}
 
-	//Send equation for calculation after Equals To (=) is pressed
+	
 	if (type === 'equal') {
-    	// Perform a calculation
+    	
 	    isEqualsPressed = true;
 	    const finalResult = handleEquation(equation);
 	    
@@ -111,7 +95,7 @@ calcKeys.addEventListener('click', (event) => {
 	calculator.dataset.previousKeyType = type;
 })
 
-//Function to calculate result based on each operator
+
 function calculate(firstNumber, operator, secondNumber) {
 
 	firstNumber = Number(firstNumber);
@@ -134,13 +118,6 @@ function handleEquation(equation) {
 	let operatorIndex;
 	let result;
 
-	/*  
-		1. Perform calculations as per BODMAS Method
-		2. For that use operators array
-		3. after calculation of 1st numbers replace them with result
-		4. use splice method
-
-	*/
 	for (var i = 0; i < operators.length; i++) {
 		while (equation.includes(operators[i])) {
 			operatorIndex = equation.findIndex(item => item === operators[i]);
